@@ -1,0 +1,11 @@
+.git
+
+node_modules
+
+writable/cache
+
+writable/logs
+
+writable/session
+
+docker-compose.override.yml
