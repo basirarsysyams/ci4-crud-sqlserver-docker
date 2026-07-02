@@ -1,69 +1,293 @@
-# CodeIgniter 4 Application Starter
+# AppStarter - CodeIgniter 4 CRUD SQL Server
 
-## What is CodeIgniter?
+A simple CRUD application built using **CodeIgniter 4**, **SQL Server**, and **Docker**.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## 🌟 Fitur Utama
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- ✅ **CRUD Lengkap** - Tambah, Edit, Hapus produk dengan modal popup
+- ✅ **DataTables Server-Side** - Pencarian, sorting, dan pagination real-time via Ajax
+- ✅ **Relasi JOIN** - Produk terhubung dengan kategori menggunakan SQL JOIN
+- ✅ **Full Ajax** - Semua operasi tanpa reload halaman (SPA-like experience)
+- ✅ **SweetAlert2** - Notifikasi dan konfirmasi yang modern & interaktif
+- ✅ **Validasi Form** - Validasi di sisi server dengan error message per-field
+- ✅ **CSRF Protection** - Keamanan request dengan token CSRF
+- ✅ **Responsive Design** - Tampilan optimal di desktop dan mobile
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+---
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+| Teknologi           | Deskripsi                                    |
+| ------------------- | -------------------------------------------- |
+| **Backend**         | CodeIgniter 4 (PHP 8.3+)                     |
+| **Database**        | Microsoft SQL Server (SQLSRV Driver)         |
+| **Frontend**        | HTML5, CSS3, Vanilla JavaScript              |
+| **Library JS**      | jQuery 3.7.1, DataTables 1.13.7, SweetAlert2 |
+| **Web Server**      | Apache / Nginx                               |
+| **Package Manager** | Composer                                     |
 
-## Installation & updates
+---
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## 📁 Struktur Project
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+```
+appstarter/
+├── app/
+│   ├── Config/
+│   │   ├── Routes.php          # Routing aplikasi
+│   │   ├── Filters.php         # Filter (CSRF exclude)
+│   │   └── Database.php        # Konfigurasi DB
+│   ├── Controllers/
+│   │   └── ProductController.php   # Logic CRUD & Ajax
+│   ├── Models/
+│   │   ├── ProductModel.php        # Query JOIN & DataTables
+│   │   └── CategoryModel.php       # Model kategori
+│   └── Views/
+│       ├── layouts/
+│       │   └── main.php            # Layout utama
+│       └── products/
+│           └── index.php           # View DataTables + Modal
+├── public/
+│   └── index.php               # Entry point
+├── writable/                   # Log & cache
+├── .env                        # Environment variables
+└── README.md                   # Dokumentasi ini
+```
 
-## Setup
+---
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+# Installation
 
-## Important Change with index.php
+## 1 Clone Repository
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+```bash
+git clone https://github.com/username/appstarter.git
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+cd appstarter
+```
 
-**Please** read the user guide for a better explanation of how CI4 works!
+---
 
-## Repository Management
+## 2 Copy Environment
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+```bash
+copy .env.example .env
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+buat file .env berikut konfigurasinya:
 
-## Server Requirements
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost:8080/'
+database.default.hostname = sqlserver
+database.default.database = appstarter
+database.default.username = sa
+database.default.password = YourStrong!Passw0rd123
+database.default.DBDriver = SQLSRV
+database.default.port = 1433
+database.default.encrypt = false
+database.default.trustServerCertificate = true
+```
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+## 3 Build Docker
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+```bash
+docker compose up -d --build
+```
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+Check container
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```bash
+docker ps
+```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+Expected
+
+```
+ci4-app
+ci4-sqlserver
+```
+
+---
+
+## 4 Enter Container
+
+```bash
+docker exec -it ci4-app bash
+```
+
+---
+
+## 5 Run Migration
+
+```bash
+php spark migrate
+```
+
+---
+
+## 6 Run Seeder
+
+```bash
+php spark db:seed CategorySeeder
+
+php spark db:seed ProductSeeder
+```
+
+---
+
+## 7 Open Browser
+
+```
+http://localhost:8080/products
+```
+
+---
+
+# 🔍 Lokasi Fitur Utama (JOIN, DataTables, Ajax)
+
+### 1️⃣ **SQL JOIN** - Relasi Products & Categories
+
+**File:** `app/Models/ProductModel.php`
+
+```php
+// Method getWithCategory() - Untuk mengambil data edit
+public function getWithCategory()
+{
+    return $this->select('products.*, categories.name as category_name')
+        ->join('categories', 'categories.id = products.category_id', 'left')
+        ->orderBy('products.id', 'DESC');
+}
+
+// Method getDataTables() - Untuk DataTables server-side
+$builder = $this->db->table('products')
+    ->select('products.id, products.name, products.price, categories.name as category_name')
+    ->join('categories', 'categories.id = products.category_id', 'left');
+```
+
+**Penjelasan:**
+
+- Menggunakan `LEFT JOIN` untuk tetap menampilkan produk meskipun tidak memiliki kategori
+- Relasi `products.category_id` → `categories.id`
+- Mengambil kolom `categories.name` dengan alias `category_name`
+
+---
+
+### 2️⃣ **DataTables Server-Side Processing**
+
+**Frontend (Client):** `app/Views/products/index.php`
+
+```javascript
+table = $('#products-table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '<?= base_url('products/ajax-list') ?>',
+        type: 'POST'
+    },
+    columns: [
+        { data: null, /* No urut */ },
+        { data: 'name' },
+        { data: 'category_name' },
+        { data: 'price_formatted' },
+        { data: null, /* Action buttons */ }
+    ],
+    // ... konfigurasi lainnya
+});
+```
+
+**Backend (Server):** `app/Models/ProductModel.php` → `getDataTables()`
+
+```php
+public function getDataTables($request)
+{
+    // 1. Total records
+    $totalRecords = $this->db->table('products')->countAllResults();
+
+    // 2. Search/Filter
+    if (!empty($keyword)) {
+        $builder->groupStart()
+            ->like('products.name', $keyword)
+            ->orLike('categories.name', $keyword)
+        ->groupEnd();
+    }
+
+    // 3. Order/Sorting
+    $builder->orderBy($orderColumn, $orderDir);
+
+    // 4. Pagination
+    $data = $builder->get($length, $start)->getResultArray();
+
+    return [
+        'draw'            => (int) $request->getPost('draw'),
+        'recordsTotal'    => $totalRecords,
+        'recordsFiltered' => $filteredRecords,
+        'data'            => $data,
+    ];
+}
+```
+
+**Route:** `app/Config/Routes.php`
+
+```php
+$routes->post('products/ajax-list', 'ProductController::ajaxList');
+```
+
+---
+
+### 3️⃣ **Ajax Operations (Full CRUD)**
+
+**File:** `app/Controllers/ProductController.php` & `app/Views/products/index.php`
+
+| Operasi                   | Endpoint                     | Method | File Controller   |
+| ------------------------- | ---------------------------- | ------ | ----------------- |
+| **Read All** (DataTables) | `/products/ajax-list`        | POST   | `ajaxList()`      |
+| **Read One** (Edit)       | `/products/ajax-get/{id}`    | GET    | `ajaxGet($id)`    |
+| **Create**                | `/products/ajax-store`       | POST   | `ajaxStore()`     |
+| **Update**                | `/products/ajax-update/{id}` | POST   | `ajaxUpdate($id)` |
+| **Delete**                | `/products/ajax-delete/{id}` | POST   | `ajaxDelete($id)` |
+
+**Contoh Ajax Create (JavaScript):**
+
+```javascript
+$('#product-form').submit(function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: '<?= base_url('products/ajax-store') ?>',
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                table.ajax.reload(null, false);
+                Swal.fire('Berhasil!', response.message, 'success');
+            }
+        }
+    });
+});
+```
+
+---
+
+# Database Structure
+
+## categories
+
+| Field       | Type    |
+| ----------- | ------- |
+| id          | int     |
+| name        | varchar |
+| description | text    |
+
+---
+
+## products
+
+| Field       | Type    |
+| ----------- | ------- |
+| id          | int     |
+| category_id | int     |
+| name        | varchar |
+| price       | int     |
+
+---
+
+# Author
+
+Basir Arsy
