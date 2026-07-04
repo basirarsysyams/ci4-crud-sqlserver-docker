@@ -85,19 +85,36 @@ database.default.encrypt = false
 database.default.trustServerCertificate = true
 ```
 
-## 3 Build Docker
+## 3. Install Composer Dependencies
+
+> **Penting**
+>
+> Walaupun Composer sudah terinstall di komputer Anda (`composer --version` berhasil),
+> Anda **tetap harus menjalankan** `composer install`.
+>
+> Hal ini karena folder `vendor/` tidak disimpan di GitHub sehingga seluruh dependency CodeIgniter harus diunduh kembali.
+
+Jalankan pada folder project:
+
+```bash
+composer install
+```
+
+---
+
+## 4. Build Docker
 
 ```bash
 docker compose up -d --build
 ```
 
-Check container
+Pastikan seluruh container berjalan.
 
 ```bash
 docker ps
 ```
 
-Expected
+Output yang diharapkan:
 
 ```
 ci4-app
@@ -106,7 +123,15 @@ ci4-sqlserver
 
 ---
 
-## 4 Enter Container
+## 5. Masuk ke Container Aplikasi
+
+### Windows
+
+```cmd
+docker exec -it ci4-app bash
+```
+
+### macOS / Linux
 
 ```bash
 docker exec -it ci4-app bash
@@ -114,7 +139,75 @@ docker exec -it ci4-app bash
 
 ---
 
-## 5 Run Migration
+## 6. Cek Database SQL Server
+
+Masuk ke SQL Server menggunakan sqlcmd.
+
+### Windows (CMD / PowerShell)
+
+```cmd
+docker exec -it ci4-sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd123" -C
+```
+
+### macOS / Linux
+
+```bash
+docker exec -it ci4-sqlserver /opt/mssql-tools18/bin/sqlcmd \
+-S localhost \
+-U sa \
+-P "YourStrong!Passw0rd123" \
+-C
+```
+
+---
+
+### Cek apakah database `appstarter` sudah ada
+
+```sql
+SELECT name
+FROM sys.databases;
+GO
+```
+
+Jika belum ada, buat database terlebih dahulu.
+
+```sql
+CREATE DATABASE appstarter;
+GO
+```
+
+Lalu keluar dari sqlcmd.
+
+```sql
+QUIT
+```
+
+---
+
+## 7. Cek Apakah Tabel Sudah Ada
+
+Masuk kembali ke SQL Server.
+
+```sql
+USE appstarter;
+GO
+
+SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES;
+GO
+```
+
+Apabila sudah terdapat tabel berikut
+
+```
+categories
+products
+migrations
+```
+
+maka **tidak perlu menjalankan migration lagi**.
+
+Apabila tabel belum ada, masuk ke container aplikasi kemudian jalankan:
 
 ```bash
 php spark migrate
@@ -122,7 +215,24 @@ php spark migrate
 
 ---
 
-## 6 Run Seeder
+## 8. Cek Apakah Data Seeder Sudah Ada
+
+Masih di SQL Server jalankan:
+
+```sql
+USE appstarter;
+GO
+
+SELECT * FROM categories;
+GO
+
+SELECT * FROM products;
+GO
+```
+
+Jika tabel sudah berisi data, **tidak perlu menjalankan Seeder lagi**.
+
+Jika tabel masih kosong, masuk ke container aplikasi lalu jalankan:
 
 ```bash
 php spark db:seed CategorySeeder
@@ -132,13 +242,13 @@ php spark db:seed ProductSeeder
 
 ---
 
-## 7 Open Browser
+## 9. Buka Aplikasi
+
+Buka browser:
 
 ```
 http://localhost:8080/products
 ```
-
----
 
 # 🔍 Lokasi Fitur Utama (JOIN, DataTables, Ajax)
 
