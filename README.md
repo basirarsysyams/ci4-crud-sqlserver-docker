@@ -66,12 +66,9 @@ cd appstarter
 
 ---
 
-## 2 Copy Environment
+## 2 Copy Environment atau Membuat file .env yang berisi data berikut ini:
 
 ```bash
-copy .env.example .env
-
-buat file .env berikut konfigurasinya:
 
 CI_ENVIRONMENT = development
 app.baseURL = 'http://localhost:8080/'
