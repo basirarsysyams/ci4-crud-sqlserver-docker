@@ -116,6 +116,7 @@ docker ps
 Output yang diharapkan:
 
 ```
+ci4-crud-sqlserver-docker-app atau
 ci4-app
 ci4-sqlserver
 ```
@@ -168,8 +169,7 @@ Masih di dalam SQL Server.
 USE appstarter;
 GO
 
-SELECT TABLE_NAME
-FROM INFORMATION_SCHEMA.TABLES;
+SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES;
 GO
 ```
 
