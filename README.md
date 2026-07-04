@@ -104,11 +104,13 @@ composer install
 
 ## 4. Build Docker
 
+Jalankan Docker Compose.
+
 ```bash
 docker compose up -d --build
 ```
 
-Pastikan seluruh container berjalan.
+Pastikan kedua container sudah berjalan.
 
 ```bash
 docker ps
@@ -123,25 +125,9 @@ ci4-sqlserver
 
 ---
 
-## 5. Masuk ke Container Aplikasi
+## 5. Cek Database SQL Server
 
-### Windows
-
-```cmd
-docker exec -it ci4-app bash
-```
-
-### macOS / Linux
-
-```bash
-docker exec -it ci4-app bash
-```
-
----
-
-## 6. Cek Database SQL Server
-
-Masuk ke SQL Server menggunakan sqlcmd.
+Masuk ke SQL Server.
 
 ### Windows (CMD / PowerShell)
 
@@ -164,29 +150,22 @@ docker exec -it ci4-sqlserver /opt/mssql-tools18/bin/sqlcmd \
 ### Cek apakah database `appstarter` sudah ada
 
 ```sql
-SELECT name
-FROM sys.databases;
+SELECT name FROM sys.databases;
 GO
 ```
 
-Jika belum ada, buat database terlebih dahulu.
+Jika database **appstarter** belum ada, buat terlebih dahulu.
 
 ```sql
 CREATE DATABASE appstarter;
 GO
 ```
 
-Lalu keluar dari sqlcmd.
-
-```sql
-QUIT
-```
-
 ---
 
-## 7. Cek Apakah Tabel Sudah Ada
+## 6. Cek Apakah Tabel Sudah Ada
 
-Masuk kembali ke SQL Server.
+Masih di dalam SQL Server.
 
 ```sql
 USE appstarter;
@@ -205,19 +184,15 @@ products
 migrations
 ```
 
-maka **tidak perlu menjalankan migration lagi**.
+berarti migration sudah pernah dijalankan sehingga **langkah migrate dapat dilewati**.
 
-Apabila tabel belum ada, masuk ke container aplikasi kemudian jalankan:
-
-```bash
-php spark migrate
-```
+Jika tabel-tabel tersebut **belum ada**, lanjut ke langkah **Masuk ke Container Aplikasi**.
 
 ---
 
-## 8. Cek Apakah Data Seeder Sudah Ada
+## 7. Cek Apakah Data Seeder Sudah Ada
 
-Masih di SQL Server jalankan:
+Masih di SQL Server.
 
 ```sql
 USE appstarter;
@@ -230,21 +205,64 @@ SELECT * FROM products;
 GO
 ```
 
-Jika tabel sudah berisi data, **tidak perlu menjalankan Seeder lagi**.
+Jika kedua tabel sudah berisi data, maka **Seeder tidak perlu dijalankan kembali**.
 
-Jika tabel masih kosong, masuk ke container aplikasi lalu jalankan:
+Jika tabel masih kosong, nanti jalankan Seeder pada langkah berikutnya.
+
+---
+
+## 8. Keluar dari SQL Server
+
+```sql
+QUIT
+```
+
+---
+
+## 9. Masuk ke Container Aplikasi
+
+### Windows
+
+```cmd
+docker exec -it ci4-app bash
+```
+
+### macOS / Linux
+
+```bash
+docker exec -it ci4-app bash
+```
+
+---
+
+## 10. Jalankan Migration (Jika Diperlukan)
+
+**Lewati langkah ini apabila tabel `categories`, `products`, dan `migrations` sudah ada.**
+
+Jika tabel belum ada, jalankan:
+
+```bash
+php spark migrate
+```
+
+---
+
+## 11. Jalankan Seeder (Jika Diperlukan)
+
+**Lewati langkah ini apabila tabel `categories` dan `products` sudah berisi data.**
+
+Jika tabel masih kosong, jalankan:
 
 ```bash
 php spark db:seed CategorySeeder
-
 php spark db:seed ProductSeeder
 ```
 
 ---
 
-## 9. Buka Aplikasi
+## 12. Buka Aplikasi
 
-Buka browser:
+Buka browser dan akses:
 
 ```
 http://localhost:8080/products
